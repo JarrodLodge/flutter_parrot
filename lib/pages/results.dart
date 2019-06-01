@@ -47,7 +47,7 @@ class _ResultsPageState extends State<ResultsPage> {
                 height: 1000,
                 child: WebView(
                   initialUrl:
-                      'https://api.flutter.dev/flutter/widgets/Row-class.html',
+                      result.webUrl,
                   javascriptMode: JavascriptMode.unrestricted,
                   onWebViewCreated: (WebViewController webViewController) {
                     _controller = webViewController;

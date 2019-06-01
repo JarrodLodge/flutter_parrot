@@ -46,6 +46,8 @@ flutter:
   assets:
    - assets/widgetImage/row.png
    - assets/widgetImage/text.jpg
+   - assets/widgetImage/column.png
+   - assets/widgetImage/stack.png
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
