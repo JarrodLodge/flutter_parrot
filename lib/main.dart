@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_parrot/models/widget_info.dart';
 import 'package:flutter_parrot/pages/results.dart';
+import 'package:speech_recognition/speech_recognition.dart';
 
 void main() => runApp(MyApp());
 
@@ -41,6 +42,62 @@ class _MyHomePageState extends State<MyHomePage> {
       code: ''
     ),
   ];
+  final SpeechRecognition _speech = SpeechRecognition();
+  bool _speechRecognitionAvailable = false;
+  String _currentLocale;
+  String transcription;
+  bool _isListening = false;
+  @override
+  void initState() {
+    super.initState();
+    // The flutter app not only call methods on the host platform,
+    // it also needs to receive method calls from host.
+    _speech.setAvailabilityHandler((bool result)
+      => setState(() => _speechRecognitionAvailable = result));
+
+    // handle device current locale detection
+    _speech.setCurrentLocaleHandler((String locale) =>
+    setState(() => _currentLocale = locale));
+
+    _speech.setRecognitionStartedHandler(() => setState(() => _isListening = true));
+    _speech.setRecognitionResultHandler((String text) => setState(() => transcription = text));
+    _speech.setRecognitionCompleteHandler(() => setState(() => _isListening = false));
+
+    _speech
+    .activate()
+    .then((res) => setState(() => _speechRecognitionAvailable = res));
+  }
+
+  Widget _voiceButton() {
+    final double boxWidth = 65;
+    return Positioned(
+      bottom: 20.0,
+      left: MediaQuery.of(context).size.width/2 - boxWidth/2,
+      child: GestureDetector(
+        onLongPress: () {
+          _speech.listen(locale:_currentLocale).then((result)=> print('result : $result'));
+        },
+        onLongPressUp: () {
+          _speech.stop();
+        },
+        child: Container(
+          width: boxWidth,
+          height: boxWidth,
+          decoration: BoxDecoration(
+            color: _isListening ? Colors.redAccent : Theme.of(context).accentColor,
+            shape: BoxShape.circle
+          ),
+          child: Center(
+            child: Icon(
+              Icons.mic,
+              color: Colors.white,
+              size: 30.0,
+            )
+          )
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,24 +105,30 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text('Flutter Parrot'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                  color: Colors.grey[200],
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'Welcome to Flutter Parrot, the voice to widget search tool',
-                      style: TextStyle(fontSize: 25),
-                    ),
-                  )),
-            )
-          ],
-        ),
+      body: Stack(
+        alignment: AlignmentDirectional.center,
+        children: <Widget>[
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                      color: Colors.grey[200],
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Welcome to Flutter Parrot, the voice to widget search tool',
+                          style: TextStyle(fontSize: 25),
+                        ),
+                      )),
+                ),
+              ],
+            ),
+          ),
+          _voiceButton()
+        ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -92,16 +155,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => ResultsPage()),
-          // );
-        },
-        tooltip: 'Increment',
-        child: Icon(Icons.mic),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
