@@ -36,9 +36,9 @@ class _MyHomePageState extends State<MyHomePage> {
     ),
     WidgetInfo(
       id: 2,
-      title: 'Column',
+      title: 'Text',
       path: '',
-      code: ''
+      code: 'Text(\'Hello, \$_name! How are you?\', textAlign: TextAlign.center, overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold),)'
     ),
   ];
 
