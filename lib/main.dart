@@ -135,10 +135,10 @@ class _MyHomePageState extends State<MyHomePage> {
         .then((res) => setState(() => _speechRecognitionAvailable = res));
   }
 
-  Widget _voiceButton() {
+  Widget _voiceButton(BuildContext context) {
     final double boxWidth = 65;
     return Positioned(
-      bottom: 10.0,
+      bottom: 30.0,
       left: MediaQuery.of(context).size.width / 2 - boxWidth / 2,
       child: GestureDetector(
         onLongPress: () {
@@ -148,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         onLongPressUp: () {
           _speech.stop();
-          _callApi(transcription);
+          _callApi(transcription, context);
         },
         child: Container(
             width: boxWidth,
@@ -168,12 +168,14 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  _callApi(String searchText) async {
+  _callApi(String searchText, BuildContext context) async {
     var response = await http.post(endpoint, body: {'sentence': searchText});
     if (response.statusCode == 200) {
       NlpResponse nlpResponse = NlpResponse.fromJson(jsonDecode(response.body));
       if (nlpResponse.response.length == 0) {
         // show snackbar TODO
+        print('0');
+        showParrotSnackBar(context, 'Oops; try Column, Text Row or Stack');
       } else {
         final NlpResponseItem item = nlpResponse.response[0];
         print(item.keyword);
@@ -183,11 +185,15 @@ class _MyHomePageState extends State<MyHomePage> {
               context,
               MaterialPageRoute(builder: (context) => ResultsPage(widgetItem.id)),
             );
+          } else {
+            showParrotSnackBar(context, 'Oops; try Column, Text Row or Stack');
           }
         });
       }
     } else {
       // show snapview TODO
+      print('1');
+      showParrotSnackBar(context, 'Oops; try column text row or stack');
     }
   }
 
@@ -205,13 +211,17 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text('Flutter Parrot'),
         ),
         backgroundColor: Colors.transparent,
-        body: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
+        body: Stack(
+          // mainAxisSize: MainAxisSize.max,
+          // mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Center(
               child: Padding(
                   padding: const EdgeInsets.all(8.0), child: _buildHero()),
+            ),
+            Builder(builder:(context) {
+              return _voiceButton(context);
+            }              
             ),
           ],
         ),
@@ -242,7 +252,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ), // This trailing comma makes auto-formatting nicer for build methods.
       ),
-      _voiceButton()
     ]);
   }
 }
