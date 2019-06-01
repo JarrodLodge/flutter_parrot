@@ -30,25 +30,30 @@ class _ResultsPageState extends State<ResultsPage> {
         title: Text(result.title),
       ),
       body: SingleChildScrollView(
-              child: Column(
+        child: Column(
           children: <Widget>[
-            SizedBox(
-                height: 250, child: Image.asset('assets/widgetImage/row.png')),
-            Card(
-                color: Colors.grey[200],
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: MarkdownBody(data: result.code),
-                )),
-            Container(
-              height: 400,
-              child: WebView(
-                initialUrl: 'https://api.flutter.dev/flutter/widgets/Row-class.html',
-                javascriptMode: JavascriptMode.unrestricted,
-                onWebViewCreated: (WebViewController webViewController) {
-                  _controller = webViewController;
-                  // _controller.loadUrl('http://www.google.com');
-                },
+            result.path != ''
+                ? SizedBox(height: 250, child: Image.asset(result.path))
+                : Container(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                child: MarkdownBody(data: result.code),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                height: 1000,
+                child: WebView(
+                  initialUrl:
+                      'https://api.flutter.dev/flutter/widgets/Row-class.html',
+                  javascriptMode: JavascriptMode.unrestricted,
+                  onWebViewCreated: (WebViewController webViewController) {
+                    _controller = webViewController;
+                    // _controller.loadUrl('http://www.google.com');
+                  },
+                ),
               ),
             )
           ],

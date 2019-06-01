@@ -4,8 +4,10 @@ List<WidgetInfo> widgetInfoList = [
   WidgetInfo(
       id: 1,
       title: 'Row',
-      path: 'path/to/image',
+      path: 'assets/widgetImage/row.png',
+      webUrl: 'https://api.flutter.dev/flutter/widgets/Row-class.html',
       code:'''
+```
 Row(
   children: [
     Container(
@@ -28,19 +30,24 @@ Row(
     ),
   ],
 )
+```
   '''
   ),
   WidgetInfo(
       id: 2,
       title: 'Text',
-      path: '',
+      path: 'assets/widgetImage/text.jpg',
+      webUrl: 'https://api.flutter.dev/flutter/widgets/Text-class.html',
       code:'''
+```
+String _name = 'Billy Bob';
 Text(
   'Hello, \$_name! How are you?',
   textAlign: TextAlign.center,
   overflow: TextOverflow.ellipsis,
   style: TextStyle(fontWeight: FontWeight.bold),
 )
+```
       '''
   ),
 ];

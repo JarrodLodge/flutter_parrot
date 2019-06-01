@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_parrot/data/list_widget.dart';
 import 'package:flutter_parrot/models/widget_info.dart';
 import 'package:flutter_parrot/pages/results.dart';
 
@@ -27,20 +28,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<WidgetInfo> _widgetInfoList = [
-    WidgetInfo(
-      id: 1,
-      title: 'Row',
-      path: '',
-      code: ''
-    ),
-    WidgetInfo(
-      id: 2,
-      title: 'Text',
-      path: '',
-      code: 'Text(\'Hello, \$_name! How are you?\', textAlign: TextAlign.center, overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold),)'
-    ),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 color: Colors.blue,
               ),
             ),
-            ..._widgetInfoList.map((w) {
+            ...widgetInfoList.map((w) {
               return ListTile(
               title: Text(w.title),
               onTap: () {
