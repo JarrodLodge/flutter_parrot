@@ -109,9 +109,13 @@ class _MyHomePageState extends State<MyHomePage> {
     var response = await http.post(endpoint, body: {'sentence': searchText});
     if (response.statusCode == 200) {
       NlpResponse nlpResponse = NlpResponse.fromJson(jsonDecode(response.body));
-      print(response.body);
+      if (nlpResponse.response.length == 0) {
+        // show snackbar TODO
+      } else {
+        final NlpResponseItem item = nlpResponse.response[0];
+      }
     } else {
-      // show snapview 
+      // show snapview TODO
     }
   }
 

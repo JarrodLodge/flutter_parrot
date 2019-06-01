@@ -17,7 +17,7 @@ class NlpResponse {
 
 class NlpResponseItem {
   final String keyword;
-  final String salience;
+  final int salience;
   final String language;
 
   NlpResponseItem(this.keyword, this.salience, this.language);
