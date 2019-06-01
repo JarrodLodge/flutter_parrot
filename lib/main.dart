@@ -42,8 +42,10 @@ class _MyHomePageState extends State<MyHomePage> {
       overflow: Overflow.visible,
       children: <Widget>[
         Container(
+          height: 250,
           decoration: BoxDecoration(
               color: Colors.white,
+              
               border: Border.all(
                   color: Theme.of(context).primaryColor,
                   width: 1.5,
@@ -138,7 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _voiceButton(BuildContext context) {
     final double boxWidth = 65;
     return Positioned(
-      bottom: 30.0,
+      bottom: 50.0,
       left: MediaQuery.of(context).size.width / 2 - boxWidth / 2,
       child: GestureDetector(
         onLongPress: () {
@@ -173,7 +175,6 @@ class _MyHomePageState extends State<MyHomePage> {
     if (response.statusCode == 200) {
       NlpResponse nlpResponse = NlpResponse.fromJson(jsonDecode(response.body));
       if (nlpResponse.response.length == 0) {
-        // show snackbar TODO
         print('0');
         showParrotSnackBar(context, 'Oops; try Column, Text Row or Stack');
       } else {
@@ -191,7 +192,6 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       }
     } else {
-      // show snapview TODO
       print('1');
       showParrotSnackBar(context, 'Oops; try column text row or stack');
     }
