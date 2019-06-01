@@ -149,7 +149,9 @@ class _MyHomePageState extends State<MyHomePage> {
               .then((result) => print('result : $result'));
         },
         onLongPressUp: () {
+          _speech.cancel();
           _speech.stop();
+          print('onLongPressUp');
           _callApi(transcription, context);
         },
         child: Container(
