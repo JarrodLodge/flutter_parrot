@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_parrot/models/nlp_response.dart';
 import 'package:flutter_parrot/models/widget_info.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_parrot/pages/results.dart';
 import 'package:speech_recognition/speech_recognition.dart';
 
@@ -47,6 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String _currentLocale;
   String transcription;
   bool _isListening = false;
+  final String endpoint = 'https://us-central1-hack19-akl.cloudfunctions.net/getSearchKeywords';
   @override
   void initState() {
     super.initState();
@@ -79,6 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         onLongPressUp: () {
           _speech.stop();
+          _callApi(transcription);
         },
         child: Container(
           width: boxWidth,
@@ -97,6 +103,16 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+  }
+
+  _callApi(String searchText) async {
+    var response = await http.post(endpoint, body: {'sentence': searchText});
+    if (response.statusCode == 200) {
+      NlpResponse nlpResponse = NlpResponse.fromJson(jsonDecode(response.body));
+      print(response.body);
+    } else {
+      // show snapview 
+    }
   }
 
   @override
