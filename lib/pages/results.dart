@@ -47,7 +47,7 @@ class _ResultsPageState extends State<ResultsPage> {
                 height: 1000,
                 child: WebView(
                   initialUrl:
-                      result.webUrl,
+                  result.webUrl,
                   javascriptMode: JavascriptMode.unrestricted,
                   onWebViewCreated: (WebViewController webViewController) {
                     _controller = webViewController;
@@ -62,5 +62,5 @@ class _ResultsPageState extends State<ResultsPage> {
     );
   }
 
-  //
+//
 }

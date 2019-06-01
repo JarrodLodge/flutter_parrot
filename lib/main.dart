@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_parrot/data/list_widget.dart';
+import 'package:flutter_parrot/models/nlp_response.dart';
 import 'package:flutter_parrot/models/widget_info.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_parrot/pages/results.dart';
+import 'package:speech_recognition/speech_recognition.dart';
 
 void main() => runApp(MyApp());
 
@@ -94,6 +98,89 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  final SpeechRecognition _speech = SpeechRecognition();
+  bool _speechRecognitionAvailable = false;
+  String _currentLocale;
+  String transcription;
+  bool _isListening = false;
+  final String endpoint =
+      'https://us-central1-hack19-akl.cloudfunctions.net/getSearchKeywords';
+
+  void showParrotSnackBar(BuildContext context, String message) {
+    Scaffold.of(context).showSnackBar(new SnackBar(content: new Text(message)));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // The flutter app not only call methods on the host platform,
+    // it also needs to receive method calls from host.
+    _speech.setAvailabilityHandler(
+        (bool result) => setState(() => _speechRecognitionAvailable = result));
+
+    // handle device current locale detection
+    _speech.setCurrentLocaleHandler(
+        (String locale) => setState(() => _currentLocale = locale));
+
+    _speech.setRecognitionStartedHandler(
+        () => setState(() => _isListening = true));
+    _speech.setRecognitionResultHandler(
+        (String text) => setState(() => transcription = text));
+    _speech.setRecognitionCompleteHandler(
+        () => setState(() => _isListening = false));
+
+    _speech
+        .activate()
+        .then((res) => setState(() => _speechRecognitionAvailable = res));
+  }
+
+  Widget _voiceButton() {
+    final double boxWidth = 65;
+    return Positioned(
+      bottom: 20.0,
+      left: MediaQuery.of(context).size.width / 2 - boxWidth / 2,
+      child: GestureDetector(
+        onLongPress: () {
+          _speech
+              .listen(locale: _currentLocale)
+              .then((result) => print('result : $result'));
+        },
+        onLongPressUp: () {
+          _speech.stop();
+          _callApi(transcription);
+        },
+        child: Container(
+            width: boxWidth,
+            height: boxWidth,
+            decoration: BoxDecoration(
+                color: _isListening
+                    ? Colors.redAccent
+                    : Theme.of(context).accentColor,
+                shape: BoxShape.circle),
+            child: Center(
+                child: Icon(
+              Icons.mic,
+              color: Colors.white,
+              size: 30.0,
+            ))),
+      ),
+    );
+  }
+
+  _callApi(String searchText) async {
+    var response = await http.post(endpoint, body: {'sentence': searchText});
+    if (response.statusCode == 200) {
+      NlpResponse nlpResponse = NlpResponse.fromJson(jsonDecode(response.body));
+      if (nlpResponse.response.length == 0) {
+        // show snackbar TODO
+      } else {
+        final NlpResponseItem item = nlpResponse.response[0];
+      }
+    } else {
+      // show snapview TODO
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(children: <Widget>[
@@ -113,8 +200,10 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Center(
-                child: Padding(
-                    padding: const EdgeInsets.all(8.0), child: _buildHero())),
+              child: Padding(
+                  padding: const EdgeInsets.all(8.0), child: _buildHero()),
+            ),
+            _voiceButton()
           ],
         ),
         drawer: Drawer(
@@ -151,18 +240,4 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     ]);
   }
-}
-
-class TriangleClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    path.lineTo(size.width, 0.0);
-    path.lineTo(size.width / 2, size.height);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(TriangleClipper oldClipper) => false;
 }
