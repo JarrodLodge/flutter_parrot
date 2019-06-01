@@ -1,5 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_parrot/models/nlp_response.dart';
+import 'package:flutter_parrot/models/widget_info.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_parrot/pages/results.dart';
+import 'package:speech_recognition/speech_recognition.dart';
 
 void main() => runApp(MyApp());
 
@@ -26,7 +32,92 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<>
+  List<WidgetInfo> _widgetInfoList = [
+    WidgetInfo(
+      id: 1,
+      title: 'Row',
+      path: '',
+      code: ''
+    ),
+    WidgetInfo(
+      id: 2,
+      title: 'Column',
+      path: '',
+      code: ''
+    ),
+  ];
+  final SpeechRecognition _speech = SpeechRecognition();
+  bool _speechRecognitionAvailable = false;
+  String _currentLocale;
+  String transcription;
+  bool _isListening = false;
+  final String endpoint = 'https://us-central1-hack19-akl.cloudfunctions.net/getSearchKeywords';
+  @override
+  void initState() {
+    super.initState();
+    // The flutter app not only call methods on the host platform,
+    // it also needs to receive method calls from host.
+    _speech.setAvailabilityHandler((bool result)
+      => setState(() => _speechRecognitionAvailable = result));
+
+    // handle device current locale detection
+    _speech.setCurrentLocaleHandler((String locale) =>
+    setState(() => _currentLocale = locale));
+
+    _speech.setRecognitionStartedHandler(() => setState(() => _isListening = true));
+    _speech.setRecognitionResultHandler((String text) => setState(() => transcription = text));
+    _speech.setRecognitionCompleteHandler(() => setState(() => _isListening = false));
+
+    _speech
+    .activate()
+    .then((res) => setState(() => _speechRecognitionAvailable = res));
+  }
+
+  Widget _voiceButton() {
+    final double boxWidth = 65;
+    return Positioned(
+      bottom: 20.0,
+      left: MediaQuery.of(context).size.width/2 - boxWidth/2,
+      child: GestureDetector(
+        onLongPress: () {
+          _speech.listen(locale:_currentLocale).then((result)=> print('result : $result'));
+        },
+        onLongPressUp: () {
+          _speech.stop();
+          _callApi(transcription);
+        },
+        child: Container(
+          width: boxWidth,
+          height: boxWidth,
+          decoration: BoxDecoration(
+            color: _isListening ? Colors.redAccent : Theme.of(context).accentColor,
+            shape: BoxShape.circle
+          ),
+          child: Center(
+            child: Icon(
+              Icons.mic,
+              color: Colors.white,
+              size: 30.0,
+            )
+          )
+        ),
+      ),
+    );
+  }
+
+  _callApi(String searchText) async {
+    var response = await http.post(endpoint, body: {'sentence': searchText});
+    if (response.statusCode == 200) {
+      NlpResponse nlpResponse = NlpResponse.fromJson(jsonDecode(response.body));
+      if (nlpResponse.response.length == 0) {
+        // show snackbar TODO
+      } else {
+        final NlpResponseItem item = nlpResponse.response[0];
+      }
+    } else {
+      // show snapview TODO
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,24 +125,30 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text('Flutter Parrot'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                  color: Colors.grey[200],
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'Welcome to Flutter Parrot, the voice to widget search tool',
-                      style: TextStyle(fontSize: 25),
-                    ),
-                  )),
-            )
-          ],
-        ),
+      body: Stack(
+        alignment: AlignmentDirectional.center,
+        children: <Widget>[
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                      color: Colors.grey[200],
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Welcome to Flutter Parrot, the voice to widget search tool',
+                          style: TextStyle(fontSize: 25),
+                        ),
+                      )),
+                ),
+              ],
+            ),
+          ),
+          _voiceButton()
+        ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -64,33 +161,20 @@ class _MyHomePageState extends State<MyHomePage> {
                 color: Colors.blue,
               ),
             ),
-            ListTile(
-              title: Text('Item 1'),
+            ..._widgetInfoList.map((w) {
+              return ListTile(
+              title: Text(w.title),
               onTap: () {
-                // Update the state of the app
-                // ...
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ResultsPage(w.id)),
+                );
               },
-            ),
-            ListTile(
-              title: Text('Item 2'),
-              onTap: () {
-                // Update the state of the app
-                // ...
-              },
-            ),
+            );
+            }).toList()
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ResultsPage()),
-          );
-        },
-        tooltip: 'Increment',
-        child: Icon(Icons.mic),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
