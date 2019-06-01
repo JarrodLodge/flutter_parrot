@@ -6,6 +6,7 @@ import 'package:flutter_parrot/models/widget_info.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_parrot/pages/results.dart';
 import 'package:speech_recognition/speech_recognition.dart';
+import 'package:permission/permission.dart';
 
 void main() => runApp(MyApp());
 
@@ -73,9 +74,18 @@ class _MyHomePageState extends State<MyHomePage> {
     _speech.setRecognitionResultHandler((String text) => setState(() => transcription = text));
     _speech.setRecognitionCompleteHandler(() => setState(() => _isListening = false));
 
-    _speech
-    .activate()
-    .then((res) => setState(() => _speechRecognitionAvailable = res));
+    _speech.activate().then((res) => setState(() => _speechRecognitionAvailable = res));
+
+    _checkPermissions();
+  }
+
+  void _checkPermissions() async {
+    List<Permissions> permissions = await Permission.getPermissionsStatus([PermissionName.Microphone]);
+    if(permissions[0].permissionStatus != PermissionStatus.allow) {
+      var list = await Permission.requestPermissions([PermissionName.Microphone]);
+      if(list.length == 0 || list[0].permissionStatus != PermissionStatus.allow) _checkPermissions();
+    }
+
   }
 
   Widget _voiceButton() {
