@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_parrot/models/widget_info.dart';
 import 'package:flutter_parrot/pages/results.dart';
 
 void main() => runApp(MyApp());
@@ -26,6 +27,21 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  List<WidgetInfo> _widgetInfoList = [
+    WidgetInfo(
+      id: 1,
+      title: 'Row',
+      path: '',
+      code: ''
+    ),
+    WidgetInfo(
+      id: 2,
+      title: 'Column',
+      path: '',
+      code: ''
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,20 +78,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 color: Colors.blue,
               ),
             ),
-            ListTile(
-              title: Text('Item 1'),
+            ..._widgetInfoList.map((w) {
+              return ListTile(
+              title: Text(w.title),
               onTap: () {
-                // Update the state of the app
-                // ...
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ResultsPage(w.id)),
+                );
               },
-            ),
-            ListTile(
-              title: Text('Item 2'),
-              onTap: () {
-                // Update the state of the app
-                // ...
-              },
-            ),
+            );
+            }).toList()
           ],
         ),
       ),
