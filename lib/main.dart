@@ -52,6 +52,11 @@ class _MyHomePageState extends State<MyHomePage> {
   String transcription;
   bool _isListening = false;
   final String endpoint = 'https://us-central1-hack19-akl.cloudfunctions.net/getSearchKeywords';
+
+  void showParrotSnackBar(BuildContext context, String message) {
+    Scaffold.of(context).showSnackBar(new SnackBar(content: new Text(message)));
+  }
+  
   @override
   void initState() {
     super.initState();
