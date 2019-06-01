@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_parrot/data/list_widget.dart';
 import 'package:flutter_parrot/models/nlp_response.dart';
 import 'package:flutter_parrot/models/widget_info.dart';
 import 'package:http/http.dart' as http;
@@ -93,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ))
             ],
           ),
-        ),
+        )
       ],
     );
   }
@@ -137,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _voiceButton() {
     final double boxWidth = 65;
     return Positioned(
-      bottom: 20.0,
+      bottom: 10.0,
       left: MediaQuery.of(context).size.width / 2 - boxWidth / 2,
       child: GestureDetector(
         onLongPress: () {
@@ -160,7 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Center(
                 child: Icon(
               Icons.mic,
-              color: Colors.white,
+              color: Colors.grey,
               size: 30.0,
             ))),
       ),
@@ -203,7 +204,6 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Padding(
                   padding: const EdgeInsets.all(8.0), child: _buildHero()),
             ),
-            _voiceButton()
           ],
         ),
         drawer: Drawer(
@@ -231,13 +231,9 @@ class _MyHomePageState extends State<MyHomePage> {
               }).toList()
             ],
           ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          tooltip: 'Increment',
-          child: Icon(Icons.mic),
         ), // This trailing comma makes auto-formatting nicer for build methods.
       ),
+      _voiceButton()
     ]);
   }
 }
