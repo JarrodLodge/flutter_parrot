@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_parrot/models/widget_info.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+
+import 'package:flutter_parrot/data/list_widget.dart';
 
 class ResultsPage extends StatefulWidget {
   final int id;
@@ -9,38 +13,22 @@ class ResultsPage extends StatefulWidget {
 }
 
 class _ResultsPageState extends State<ResultsPage> {
-  List<WidgetInfo> _widgetInfoList = [
-    WidgetInfo(
-      id: 1,
-      title: 'Row',
-      path: '',
-      code: ''
-    ),
-    WidgetInfo(
-      id: 2,
-      title: 'Column',
-      path: '',
-      code: ''
-    ),
-  ];
-
   WidgetInfo result;
+
+  WebViewController _controller;
 
   @override
   void initState() {
-    result = _widgetInfoList.firstWhere((w) => w.id == widget.id);
+    result = widgetInfoList.firstWhere((w) => w.id == widget.id);
     super.initState();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(result.title),
       ),
-<<<<<<< HEAD
-      body: Text(result.title),
-=======
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
@@ -59,7 +47,7 @@ class _ResultsPageState extends State<ResultsPage> {
                 height: 1000,
                 child: WebView(
                   initialUrl:
-                      result.webUrl,
+                  result.webUrl,
                   javascriptMode: JavascriptMode.unrestricted,
                   onWebViewCreated: (WebViewController webViewController) {
                     _controller = webViewController;
@@ -71,7 +59,8 @@ class _ResultsPageState extends State<ResultsPage> {
           ],
         ),
       ),
->>>>>>> 50f7be233bf889fa22b9f8bee4c1ed5ac3b2c96f
     );
   }
+
+//
 }
