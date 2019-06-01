@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_parrot/data/list_widget.dart';
 import 'package:flutter_parrot/models/nlp_response.dart';
 import 'package:flutter_parrot/models/widget_info.dart';
 import 'package:http/http.dart' as http;
@@ -118,6 +119,15 @@ class _MyHomePageState extends State<MyHomePage> {
         // show snackbar TODO
       } else {
         final NlpResponseItem item = nlpResponse.response[0];
+        print(item.keyword);
+        widgetInfoList.forEach((widgetItem) {
+          if (widgetItem.title.toLowerCase() == item.keyword.toLowerCase()) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ResultsPage(widgetItem.id)),
+            );
+          }
+        });
       }
     } else {
       // show snapview TODO
