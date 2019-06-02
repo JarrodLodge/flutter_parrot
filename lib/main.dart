@@ -15,6 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Parrot',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
         primaryColor: Color(0xFF49b046),
@@ -92,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       borderRadius: BorderRadius.circular(35)),
                   child: Padding(
                     padding: const EdgeInsets.all(12.0),
-                    child: Text('Try saying "Show me a Row Widget"'),
+                    child: Text('Try saying "Show me a Text Widget"'),
                   ))
             ],
           ),
@@ -149,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
               .then((result) => print('result : $result'));
         },
         onLongPressUp: () {
-          _speech.cancel();
+          // _speech.cancel();
           _speech.stop();
           print('onLongPressUp');
           _callApi(transcription, context);
@@ -178,7 +179,7 @@ class _MyHomePageState extends State<MyHomePage> {
       NlpResponse nlpResponse = NlpResponse.fromJson(jsonDecode(response.body));
       if (nlpResponse.response.length == 0) {
         print('0');
-        showParrotSnackBar(context, 'Oops; try Column, Text Row or Stack');
+        // showParrotSnackBar(context, 'Oops; try Column, Text Row or Stack');
       } else {
         final NlpResponseItem item = nlpResponse.response[0];
         print(item.keyword);
@@ -189,13 +190,13 @@ class _MyHomePageState extends State<MyHomePage> {
               MaterialPageRoute(builder: (context) => ResultsPage(widgetItem.id)),
             );
           } else {
-            showParrotSnackBar(context, 'Oops; try Column, Text Row or Stack');
+            // showParrotSnackBar(context, 'Oops; try Column, Text Row or Stack');
           }
         });
       }
     } else {
       print('1');
-      showParrotSnackBar(context, 'Oops; try column text row or stack');
+      // showParrotSnackBar(context, 'Oops; try column text row or stack');
     }
   }
 
